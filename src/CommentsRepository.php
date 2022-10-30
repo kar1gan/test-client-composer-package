@@ -31,13 +31,19 @@ class CommentsRepository implements CommentsRepositoryInterface {
 
 		$comments = [];
 		foreach ($rawComments as $rawComment) {
-			$comment = new Comment(
-				$rawComment[Comment::ATTR_ID],
-				$rawComment[Comment::ATTR_NAME],
-				$rawComment[Comment::ATTR_TEXT]
-			);
+			if (false === is_int($id = $rawComment[Comment::ATTR_ID] ?? null)) {
+				throw new \Exception('Id not passed or wrong type');
+			}
 
-			$comments[] = $comment;
+			if (false === is_string($name = $rawComment[Comment::ATTR_NAME] ?? null)) {
+				throw new \Exception('Name not passed or wrong type');
+			}
+
+			if (false === is_string($text = $rawComment[Comment::ATTR_TEXT] ?? null)) {
+				throw new \Exception('Text not passed or wrong type');
+			}
+
+			$comments[] = new Comment($id, $name, $text);
 		}
 
 		return $comments;
@@ -70,6 +76,10 @@ class CommentsRepository implements CommentsRepositoryInterface {
 	 * @throws \Throwable
 	 */
 	public function changeComment(Comment $comment): bool {
+		if (null === $comment->getId()) {
+			throw new \Exception('Id can`t be empty');
+		}
+
 		if (null === $comment->getName() && null === $comment->getText()) {
 			throw new \Exception('Author name and comment text cannot be empty at the same time');
 		}

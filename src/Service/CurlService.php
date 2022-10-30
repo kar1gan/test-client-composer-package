@@ -15,7 +15,7 @@ class CurlService implements CurlServiceInterface {
 	 * @throws \Exception
 	 */
 	public function send(string $endpoint, string $body, string $httpMethod): mixed {
-		if(false === ($handle = curl_init())) {
+		if (false === ($handle = curl_init())) {
 			throw new \Exception('Can`t initialize a cURL session');
 		}
 

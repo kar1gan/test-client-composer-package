@@ -1,10 +1,6 @@
 {
 	"name": "kar1gan/test-client-composer-package",
-	"autoload": {
-		"psr-4": {
-			"kar1gan\\TestClientComposerPackage\\": "src/"
-		}
-	},
+	"type": "library",
 	"authors": [
 		{
 			"name": "Borodenko Aleksey",
@@ -15,11 +11,24 @@
 		"php": ">=8.0.0",
 		"ext-curl": ">=7.29.0"
 	},
+	"autoload": {
+		"psr-4": {
+			"kar1gan\\TestClientComposerPackage\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-0": {
+			"kar1gan\\TestClientComposerPackage\\Test\\": "tests/"
+		}
+	},
 	"config": {
 		"platform": {
 			"php": "8.0.0"
 		},
 		"optimize-autoloader": true,
 		"sort-packages": true
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.5"
 	}
 }
