@@ -51,7 +51,10 @@ class Comment implements \JsonSerializable {
 		return $this->text;
 	}
 
-	public function jsonSerialize() {
+	/**
+	 * @inheritDoc
+	 */
+	public function jsonSerialize(): array {
 		return [
 			self::ATTR_ID   => $this->id,
 			self::ATTR_NAME => $this->name,
