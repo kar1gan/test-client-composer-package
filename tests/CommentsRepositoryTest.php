@@ -6,6 +6,7 @@ namespace kar1gan\TestClientComposerPackage\Test;
 
 use kar1gan\TestClientComposerPackage\CommentsRepository;
 use kar1gan\TestClientComposerPackage\DataTransferObject\Comment;
+use kar1gan\TestClientComposerPackage\Service\DummyRequestSender;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -13,23 +14,43 @@ use PHPUnit\Framework\TestCase;
  */
 class CommentsRepositoryTest extends TestCase {
 
+	/** Репозиторий комментариев */
 	private CommentsRepository $repository;
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function setUp(): void {
-		$this->repository = new CommentsRepository();
+		$this->repository = new CommentsRepository(new DummyRequestSender());
 	}
 
 	/**
-	 * Тестирование исключения при пустых имени автора и тексте комментария
+	 * Тестирование исключения при пустом имени автора при добавлении комментария
 	 *
-	 * @covers \kar1gan\TestClientComposerPackage\CommentsRepository::addComment
+	 * @covers CommentsRepository::addComment
 	 *
 	 * @throws \Throwable
 	 *
 	 * @return void
 	 */
-	public function testExceptionInAddCommentMethodIfNameAndTextIsNull(): void {
-		$comment = new Comment(1, null, null);
+	public function testExceptionInAddCommentMethodIfAuthorNameIsNull(): void {
+		$comment = new Comment(1, null, 'text');
+
+		$this->expectException(\Exception::class);
+		$this->repository->addComment($comment);
+	}
+
+	/**
+	 * Тестирование исключения при пустом тексте при добалвении комментария
+	 *
+	 * @covers CommentsRepository::addComment
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testExceptionInAddCommentMethodIfTextIsNull(): void {
+		$comment = new Comment(1, 'name', null);
 
 		$this->expectException(\Exception::class);
 		$this->repository->addComment($comment);
@@ -38,7 +59,7 @@ class CommentsRepositoryTest extends TestCase {
 	/**
 	 * Тестирование исключение при пустом идентификаторе комментария
 	 *
-	 * @covers \kar1gan\TestClientComposerPackage\CommentsRepository::changeComment
+	 * @covers CommentsRepository::changeComment
 	 *
 	 * @throws \Throwable
 	 *
@@ -54,7 +75,7 @@ class CommentsRepositoryTest extends TestCase {
 	/**
 	 * Тестирвоание исключение при пустом имени автора/тексте комментария
 	 *
-	 * @covers \kar1gan\TestClientComposerPackage\CommentsRepository::changeComment
+	 * @covers CommentsRepository::changeComment
 	 *
 	 * @throws \Throwable
 	 *
@@ -65,5 +86,127 @@ class CommentsRepositoryTest extends TestCase {
 
 		$this->expectException(\Exception::class);
 		$this->repository->changeComment($comment);
+	}
+
+	/**
+	 * Тестирование исключения при невалидном идентификаторе при получении комментариев
+	 *
+	 * @covers CommentsRepository::getComments
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testExceptionIfIdFieldIsNotValidInGetCommentsMethod(): void {
+		$service    = new DummyRequestSender([new Comment(null, 'name', 'text')]);
+		$repository = new CommentsRepository($service);
+
+		$this->expectException(\Exception::class);
+		$repository->getComments();
+	}
+
+	/**
+	 * Тестирование исключения при невалидном имени автора при получении комментариев
+	 *
+	 * @covers CommentsRepository::getComments
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testExceptionIfIdFieldNameNotValidInGetCommentsMethod(): void {
+		$service    = new DummyRequestSender([new Comment(100, null, 'text')]);
+		$repository = new CommentsRepository($service);
+
+		$this->expectException(\Exception::class);
+		$repository->getComments();
+	}
+
+	/**
+	 * Тестирование исключения при невалидном тексте комментария при получении комментариев
+	 *
+	 * @covers CommentsRepository::getComments
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testExceptionIfIdFieldTextNotValidInGetCommentsMethod(): void {
+		$service    = new DummyRequestSender([new Comment(100, 'name', null)]);
+		$repository = new CommentsRepository($service);
+
+		$this->expectException(\Exception::class);
+		$repository->getComments();
+	}
+
+	/**
+	 * Тестирование успешного ответа при получении комментариев
+	 *
+	 * @covers CommentsRepository::getComments
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testSuccessResponseInGetCommentsMethod(): void {
+		$comments = $this->repository->getComments();
+
+		self::assertNotEmpty($comments);
+		foreach ($comments as $comment) {
+			self::assertIsInt($comment->getId());
+			self::assertIsString($comment->getName());
+			self::assertIsString($comment->getText());
+		}
+	}
+
+	/**
+	 * Тестирование успешного ответа при добавлении комментария
+	 *
+	 * @covers CommentsRepository::addComment
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testSuccessResponseInAddCommentMethod(): void {
+		$comment = new Comment(100, 'name', 'text');
+
+		$result = $this->repository->addComment($comment);
+		self::assertIsBool($result);
+		self::assertSame(true, $result);
+	}
+
+	/**
+	 * Тестирование успешного ответа при изменении комментария
+	 *
+	 * @covers CommentsRepository::changeComment
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testSuccessResponseInChangeCommentMethod(): void {
+		$comment = new Comment(3, 'Aleksey', 'can i go to step 3?');
+
+		$result = $this->repository->changeComment($comment);
+		self::assertIsBool($result);
+		self::assertSame(true, $result);
+	}
+
+	/**
+	 * Тестирование негативного ответа при измеении комментария
+	 *
+	 * @covers CommentsRepository::changeComment
+	 *
+	 * @throws \Throwable
+	 *
+	 * @return void
+	 */
+	public function testFalseResultIfCommentNotExistInChangeCommentMethod(): void {
+		$comment = new Comment(999, 'comment is not', 'exist');
+
+		$result = $this->repository->changeComment($comment);
+		self::assertIsBool($result);
+		self::assertSame(false, $result);
 	}
 }

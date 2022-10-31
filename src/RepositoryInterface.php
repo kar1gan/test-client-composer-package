@@ -9,7 +9,7 @@ use kar1gan\TestClientComposerPackage\DataTransferObject\Comment;
 /**
  * Интерфейс репозитория комментариев
  */
-interface CommentsRepositoryInterface {
+interface RepositoryInterface {
 
 	/**
 	 * Получить комментарии

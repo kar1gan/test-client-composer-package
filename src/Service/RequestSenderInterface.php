@@ -7,7 +7,7 @@ namespace kar1gan\TestClientComposerPackage\Service;
 /**
  * Интерфейс сервиса отправки запросов
  */
-interface CurlServiceInterface {
+interface RequestSenderInterface {
 
 	/**
 	 * Отправить запрос

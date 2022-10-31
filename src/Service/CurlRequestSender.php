@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace kar1gan\TestClientComposerPackage\Service;
 
 /**
- * Сервис отправки запросов
+ * Сервисе отравки запросов через curl
  */
-class CurlService implements CurlServiceInterface {
+class CurlRequestSender implements RequestSenderInterface {
 
 	/**
 	 * @inheritDoc

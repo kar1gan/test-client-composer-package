@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace kar1gan\TestClientComposerPackage;
 
 use kar1gan\TestClientComposerPackage\DataTransferObject\Comment;
-use kar1gan\TestClientComposerPackage\Service\CurlService;
+use kar1gan\TestClientComposerPackage\Service\RequestSenderInterface;
 
 /**
  * Репозиторий комментариев
  */
-class CommentsRepository implements CommentsRepositoryInterface {
-
-	/** Сервис отправки запросов */
-	private CurlService $service;
+class CommentsRepository implements RepositoryInterface {
 
 	private const ENDPOINT = 'http://example.com/comments/';
 
-	public function __construct() {
-		$this->service = new CurlService();
-	}
+	/**
+	 * @param RequestSenderInterface $service Сервис отправки запросов
+	 */
+	public function __construct(
+		private RequestSenderInterface $service
+	) {}
 
 	/**
 	 * @inheritDoc

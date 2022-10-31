@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace kar1gan\TestClientComposerPackage\DataTransferObject;
 
 /**
- * Модель коментария
+ * Модель комментария
  */
-class Comment {
+class Comment implements \JsonSerializable {
 
 	public const ATTR_ID   = 'id';
 	public const ATTR_NAME = 'name';
@@ -25,6 +25,8 @@ class Comment {
 	) {}
 
 	/**
+	 * Получить идентификатор комментария
+	 *
 	 * @return int|null
 	 */
 	public function getId(): ?int {
@@ -32,6 +34,8 @@ class Comment {
 	}
 
 	/**
+	 * Получить имя комментатора
+	 *
 	 * @return string|null
 	 */
 	public function getName(): ?string {
@@ -39,9 +43,19 @@ class Comment {
 	}
 
 	/**
+	 * Получить текст комментария
+	 *
 	 * @return string|null
 	 */
 	public function getText(): ?string {
 		return $this->text;
+	}
+
+	public function jsonSerialize() {
+		return [
+			self::ATTR_ID   => $this->id,
+			self::ATTR_NAME => $this->name,
+			self::ATTR_TEXT => $this->text
+		];
 	}
 }
